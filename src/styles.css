@@ -1,1 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
+@font-face{
+    font-family: 'irabYekan';
+    src: url('./app/iranyekan-cufonfonts/Qs_Iranyekan.ttf')format('ttf');
+}
+
+
+
+
+
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
+}
+
+html{
+  overflow-x: hidden;
+}
