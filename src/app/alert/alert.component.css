@@ -1,0 +1,104 @@
+@import url(https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css);
+@import url(https://fonts.googleapis.com/css?family=Roboto:700,400,300);
+@import url(https://raw.github.com/necolas/normalize.css/master/normalize.css);
+
+
+
+
+.flag.note {
+  position: fixed;    
+  top: 20px;           
+  right: 20px;         
+  width: 930px;        
+  max-width: 90%;      
+  margin: 0;          
+  display: flex;       
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+  border-radius: 8px;   
+  z-index: 9999;       
+}
+
+
+.flag {
+  display: table;
+  width: 100%;
+  direction: rtl;
+}
+
+.flag__image,
+.flag__body {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.flag__image {
+  padding-left: 24px;
+  padding-right: 0;
+  text-align: center;
+  font-size: 2rem;
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.flag__body {
+  width: 100%;
+  text-align: right;
+}
+
+.note {
+  position: relative;
+  overflow: hidden;
+  color: white;
+  background-color: #9b59b6;
+}
+
+.note--secondary {
+  background-color: #34495e;
+}
+
+.note--success {
+  background-color: #27ae60;
+}
+
+.note--warning {
+  background-color: #f39c12;
+}
+
+.note--error {
+  background-color: #e74c3c;
+}
+
+.note--info {
+  background-color: #3498db;
+}
+
+.note__icon,
+.note__text {
+  padding: 24px;
+}
+
+.note__close {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: auto;
+  width: 29px;
+  line-height: 30px;
+  font-size: 24px;
+  text-align: center;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: all 0.25s;
+  text-decoration: none;
+}
+
+.fa-times {
+  display: flex;
+  justify-content: space-around;
+
+}
+
+.note:hover .note__close {
+  opacity: 1;
+}

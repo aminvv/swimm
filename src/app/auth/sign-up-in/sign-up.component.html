@@ -1,0 +1,108 @@
+<main class="sign-up">
+  <div class="sign-up__container">
+    <div class="sign-up__image">
+      <!-- SVG همون قبلی -->
+      <svg class="chart" viewBox="0 0 800 960" xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <!-- ... بقیه SVG بدون تغییر ... -->
+      </svg>
+    </div>
+    <div class="sign-up__content">
+
+      <header class="sign-up__header">
+        <h1 class="sign-up__title">
+          {{ isSignUp ? 'ثبت نام' : 'ورود' }}
+        </h1>
+        <p class="sign-up__descr">
+          {{ isSignUp ? 'خوش آمدید، لطفا حساب کاربری خود را ثبت کنید.' : 'لطفا وارد حساب کاربری خود شوید.' }}
+        </p>
+      </header>
+
+      <!-- اضافه شدن formGroup و ngSubmit -->
+      <form [formGroup]="signupForm" (ngSubmit)="submit()" class="sign-up__form form">
+        <!-- فیلدهای اضافی فقط در حالت ثبت‌نام -->
+        <div *ngIf="isSignUp">
+          <div class="form__row form__row--two">
+            <div class="input form__inline-input">
+              <div class="input__container">
+                <input class="input__field" id="first-name" placeholder="First Name" required type="text"
+                  formControlName="firstName" />
+                <label class="input__label" for="first-name">نام</label>
+              </div>
+            </div>
+            <div class="input form__inline-input">
+              <div class="input__container">
+                <input class="input__field" id="last-name" placeholder="Last Name" required type="text"
+                  formControlName="lastName" />
+                <label class="input__label" for="last-name">نام خانوادگی</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form__row">
+            <div class="input">
+              <div class="input__container">
+                <input class="input__field" id="email" placeholder="Email" required type="text"
+                  formControlName="email" />
+                <label class="input__label" for="email">ایمیل</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- فیلد مشترک -->
+        <div class="form__row">
+          <div class="input">
+            <div class="input__container">
+              <input class="input__field" id="username" placeholder="Username" required type="text"
+                formControlName="username" />
+              <label class="input__label" for="username">نام کاربری</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="input">
+            <div class="input__container">
+              <input class="input__field" id="password" placeholder="Password" required type="password"
+                formControlName="password" />
+              <label class="input__label" for="password">پسورد</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- تکرار رمز فقط در حالت ثبت‌نام -->
+        <div class="form__row" *ngIf="isSignUp">
+          <div class="input">
+            <div class="input__container">
+              <input class="input__field" id="confirm-password" placeholder="Confirm password" required type="password"
+                formControlName="confirmPassword" />
+              <label class="input__label" for="confirm-password">تکرار رمز</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="component component--primary form__button">
+            <!-- فعال/غیرفعال کردن دکمه با Reactive Form -->
+            <button type="submit" class="btn btn--regular" [disabled]="signupForm.invalid">
+              {{ isSignUp ? 'ثبت نام' : 'ورود' }}
+            </button>
+
+          </div>
+        </div>
+
+        <div class="form__row sign-up__sign">
+          <span *ngIf="isSignUp">
+            قبلاً حساب کاربری دارید؟ <a href="#" (click)="toggleForm($event)">ورود</a>
+          </span>
+          <span *ngIf="!isSignUp">
+            حساب کاربری ندارید؟ <a href="#" (click)="toggleForm($event)">ثبت نام</a>
+          </span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+</main>

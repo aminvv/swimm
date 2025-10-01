@@ -1,0 +1,27 @@
+
+
+<div class="flag note" *ngIf="alert" [ngClass]="{
+       'note--secondary': alert.type === 'secondary',
+       'note--success': alert.type === 'success',
+       'note--warning': alert.type === 'warning',
+       'note--error': alert.type === 'error',
+       'note--info': alert.type === 'info'
+     }">
+
+  <div class="flag__image note__icon">
+    <i class="fa" [ngClass]="{
+         'fa-heart': alert.type==='default',
+         'fa-comment': alert.type==='secondary',
+         'fa-check': alert.type==='success',
+         'fa-exclamation': alert.type==='warning',
+         'fa-times': alert.type==='error',
+         'fa-info': alert.type==='info'
+       }"></i>
+  </div>
+
+  <div class="flag__body note__text">{{ alert.message }}</div>
+
+<a href="#" class="note__close" (click)="close($event)">
+  <i class="fa fa-times"></i>
+</a>
+</div>

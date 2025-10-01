@@ -1,6 +1,7 @@
 {
-  "name": "swimm",
+  "name": "isogum",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -14,7 +15,7 @@
     "@angular/common": "^17.3.0",
     "@angular/compiler": "^17.3.0",
     "@angular/core": "^17.3.0",
-    "@angular/forms": "^17.3.0",
+    "@angular/forms": "^17.3.12",
     "@angular/platform-browser": "^17.3.0",
     "@angular/platform-browser-dynamic": "^17.3.0",
     "@angular/router": "^17.3.0",
@@ -27,15 +28,21 @@
     "@angular-devkit/build-angular": "^17.3.7",
     "@angular/cli": "^17.3.7",
     "@angular/compiler-cli": "^17.3.0",
+    "@babel/cli": "^7.24.7",
+    "@babel/core": "^7.24.7",
+    "@babel/plugin-transform-typescript": "^7.24.7",
     "@ionic/angular-toolkit": "^2.3.3",
     "@types/aos": "^3.0.7",
     "@types/jasmine": "~5.1.0",
+    "audit": "^0.0.6",
+    "fix": "^0.0.6",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "npm": "^10.8.1",
     "typescript": "~5.4.2"
   }
 }

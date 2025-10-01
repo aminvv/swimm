@@ -1,0 +1,170 @@
+<div class="detail-container">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="#">Home</a> /
+    <a href="#">Electronics</a> /
+    <span>Noise-Cancelling Wireless Headphones</span>
+  </nav>
+
+  <!-- Product Details -->
+  <div class="product-detail">
+    <!-- Images -->
+    <div class="product-images">
+      <img src="https://ik.imagekit.io/9tnlivadc/cylinder%20-2.png?updatedAt=1757666129749" alt="Main Product Image"
+        class="main-image">
+      <div class="thumbnail-images">
+        <img src="https://ik.imagekit.io/9tnlivadc/cylinder%20-2.png?updatedAt=1757666129749" alt="Thumbnail 1">
+        <img src="https://ik.imagekit.io/9tnlivadc/cylinder%20-2.png?updatedAt=1757666129749" alt="Thumbnail 2">
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="product-info">
+      <h1>هدفون‌های بی‌سیم روگوشی با قابلیت حذف نویز</h1>
+      <p class="sku">SKU: 12345 | Men's Headphones</p>
+      <p class="price">$7,600.00</p>
+      <p class="payment-info">4 interest-free payments with <a href="#">Klarna</a>.</p>
+
+
+      <div class="actions_wrraper">
+        <!-- Quantity -->
+        <div class="quantity-section">
+          <button (click)="decreaseQuantity()">-</button>
+          <input type="text" class="quantity-input" [value]="quantity" (input)="onQuantityInput($event)">
+          <button (click)="increaseQuantity()">+</button>
+        </div>
+
+
+        <!-- Actions -->
+        <div class="actions">
+
+          <button class="buy-now " role="button"><span class="text">خرید</span></button>
+        </div>
+      </div>
+      <!-- Additional Info (Free Shipping, Support, Warranty, Delivery) -->
+      <div class="additional-info">
+        <p><strong>نوع پوشش: فویل آلومینیومی ۱۴ میکرون یا فیلم پلی اتیلن</strong></p>
+        <p><strong>پشتیبانی نوع بستر الیاف: تیشو + پلی استر</strong> ۰۸۰۰-۱۲۳-۴۵۶۷+</p>
+        <p><strong>کد محصول: WP۵۰۰۰
+            نوع قیر: پالایشگاهی گرید ۷۰/۶۰ اصلاح شده با پلیمر</strong></p>
+        <p><strong>استانداردهای کالا: استاندارد ملی ایران، استاندارد CE اروپا</strong> ISO ۹۰۰۱ ، ISO ۱۴۰۰۱ و ISO ۴۵۰۰۱
+        </p>
+        <p><strong>پشتیبانی نوع بستر الیاف: تیشو + پلی استر</strong> ۰۸۰۰-۱۲۳-۴۵۶۷+</p>
+        <p><strong>کد محصول: WP۵۰۰۰
+            نوع قیر: پالایشگاهی گرید ۷۰/۶۰ اصلاح شده با پلیمر</strong></p>
+        <p><strong>استانداردهای کالا: استاندارد ملی ایران، استاندارد CE اروپا</strong> ISO ۹۰۰۱ ، ISO ۱۴۰۰۱ و ISO ۴۵۰۰۱
+        </p>
+        <p><strong>پشتیبانی نوع بستر الیاف: تیشو + پلی استر</strong> ۰۸۰۰-۱۲۳-۴۵۶۷+</p>
+        <p><strong>کد محصول: WP۵۰۰۰
+            نوع قیر: پالایشگاهی گرید ۷۰/۶۰ اصلاح شده با پلیمر</strong></p>
+        <p><strong>استانداردهای کالا: استاندارد ملی ایران، استاندارد CE اروپا</strong> ISO ۹۰۰۱ ، ISO ۱۴۰۰۱ و ISO ۴۵۰۰۱
+        </p>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- Tabs for Additional Info -->
+  <section class="creative-cards style-one">
+    <div class="container">
+      <div class="row">
+        <div class="card-column">
+          <div class="card-details" (click)="scrollTo('usage')" >
+            <div class="card-icons">
+              <img class="light-icon" src="https://ik.imagekit.io/9tnlivadc/incentive.png?updatedAt=1758966985426"
+                alt="icon" />
+            </div>
+            <h3>مزایای استفاده</h3>
+            <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و طراحی.</p>
+
+          </div>
+        </div>
+        <div class="card-column">
+          <div class="card-details"(click)="scrollTo('advantages')">
+            <div class="card-icons">
+              <img class="light-icon" src="https://ik.imagekit.io/9tnlivadc/utilization.png?updatedAt=1758966910222"
+                alt="icon" />
+            </div>
+            <h3>موارد کاربردی</h3>
+            <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و طراحی.</p>
+
+          </div>
+        </div>
+        <div class="card-column">
+          <div class="card-details"  (click)="scrollTo('specs')">
+            <div class="card-icons">
+              <img class="light-icon" src="https://ik.imagekit.io/9tnlivadc/work-list.png?updatedAt=1758964438654"
+                alt="icon" />
+            </div>
+            <h3>مشخصات فنی</h3>
+            <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و طراحی.</p>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Products -->
+  <div class="related-products">
+    <h2>Related Products</h2>
+    <div class="product">
+      <img src="https://ik.imagekit.io/9tnlivadc/cylinder%20-2.png?updatedAt=1757666129749" alt="Product 1">
+      <p>Sony Seamaster</p>
+      <p>$5,200.00</p>
+    </div>
+    <div class="product">
+      <img src="https://ik.imagekit.io/9tnlivadc/cylinder%20-3.png?updatedAt=1758978821" alt="Product 2">
+      <p>Tag Bose Monaco</p>
+      <p>$4,500.00</p>
+    </div>
+
+  </div>
+
+
+
+  <div class="additional-info" id="specs">
+  <h3><a href="https://www.fiverr.com/s/8zElN2v">مشخصات فنی</a></h3>
+  <p><strong>نوع پوشش: فویل آلومینیومی ۱۴ میکرون یا فیلم پلی اتیلن</strong></p>
+  <p><strong>پشتیبانی نوع بستر الیاف: تیشو + پلی استر</strong> ۰۸۰۰-۱۲۳-۴۵۶۷+</p>
+  <p><strong>کد محصول: WP۵۰۰۰
+        نوع قیر: پالایشگاهی گرید ۷۰/۶۰ اصلاح شده با پلیمر</strong></p>
+    <p><strong>استانداردهای کالا: استاندارد ملی ایران، استاندارد CE اروپا</strong> ISO ۹۰۰۱ ، ISO ۱۴۰۰۱ و ISO ۴۵۰۰۱</p>
+
+  </div>
+
+
+
+
+  <div class="tab-content" id="usage">
+    <h3><a href="https://ik.imagekit.io/9tnlivadc/incentive.png?updatedAt=1758966985426">مزایای استفاده</a></h3>
+    <p>با این هدفون بی‌سیم، ترکیب کاملی از سبک، راحتی و فناوری پیشرفته را تجربه کنید. این هدفون که با طراحی سبک و
+      ارگونومیک ساخته شده است، به راحتی و به طور ایمن در گوش قرار می‌گیرد و تضمین می‌کند که می‌توانید تمام روز بدون
+      ناراحتی از آن استفاده کنید. این هدفون دارای درایورهای صدای پیشرفته‌ای است که تجربه صوتی استثنایی را با فرکانس‌های
+      بالای شفاف، فرکانس‌های میانی متعادل و بیس قدرتمند برای صدایی واقعاً فراگیر ارائه می‌دهند. اتصال بلوتوث یکپارچه،
+      امکان جفت شدن سریع و پایدار با دستگاه‌های شما را فراهم می‌کند، بنابراین می‌توانید از موسیقی، تماس‌ها و رسانه‌ها
+      بدون وقفه لذت ببرید. باتری بادوام آن، ساعت‌ها پخش مداوم را تضمین می‌کند و آن را به همراهی ایده‌آل برای روزهای کاری
+      شلوغ، تمرینات شدید یا رفت و آمدهای آرامش‌بخش تبدیل می‌کند. کنترل‌های لمسی بصری و میکروفون داخلی، راحتی بیشتری را
+      فراهم می‌کنند و به شما امکان می‌دهند تماس‌ها و پخش صدا را به راحتی مدیریت کنید. چه در حال حرکت باشید، چه در حال
+      ورزش یا استراحت در خانه، این هدفون بی‌سیم ترکیبی عالی از عملکرد، کاربردی بودن و راحتی را ارائه می‌دهد و تجربه
+      شنیداری روزمره شما را ارتقا می‌دهد.</p>
+  </div>
+
+  <div class="tab-content" id="advantages">
+    <h3><a href="https://ik.imagekit.io/9tnlivadc/">موارد کاربردی</a></h3>
+    <p>این هدفون بی‌سیم، طراحی شیک را با فناوری پیشرفته ترکیب می‌کند تا یک تجربه صوتی بی‌نظیر را ارائه دهد. این
+      هدفون با ساختاری سبک و ارگونومیک، راحتی را برای استفاده طولانی مدت فراهم می‌کند. درایورهای صدای پیشرفته،
+      صداهای زیر واضح و باس عمیق را تضمین می‌کنند، در حالی که جدیدترین اتصال بلوتوث، اتصال بی‌نقص را ارائه می‌دهد.
+      این هدفون بی‌سیم که هم برای کار و هم برای بازی ایده‌آل است، همراه ایده‌آل شما برای راحتی در حال حرکت و گوش
+      دادن فراگیر است.</p>
+  </div>
+
+
+
+  <!-- Footer -->
+</div>
+<footer>
+  <app-footer></app-footer>
+</footer>
