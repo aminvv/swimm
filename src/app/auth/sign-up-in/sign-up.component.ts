@@ -1,56 +1,238 @@
 import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { SignUpPayload } from '../dto/signup-payload.interface';
-import { AuthService } from '../service/Auth.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { createSignUpForm } from '../form-config/signup-form.config';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../service/Auth.service';
 import { AlertService } from '../../alert/service/alert.service';
+import { createSignUpForm } from '../form-config/signup-form.config';
+import { SignUpPayload } from '../dto/signup-payload.interface';
+import { catchError, debounceTime, distinctUntilChanged, filter, finalize, map, switchMap } from 'rxjs/operators';
+import { Subject, of } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.component.html',
   styleUrls: ['./sign-up.component.css']
 })
-export class SignUpComponent implements AfterViewInit, OnInit {
+export class SignUpComponent implements OnInit, AfterViewInit {
+
+  private iranMobileRegex = /^09[1-9][0-9]{8}$/;
+
   isSignUp = true;
   formValid = false;
-  signupForm!: FormGroup;
+  isMobileValid = false;
+  checkingMobile = false;
 
-  ;
+  otpTimer = 0;
+  otpButtonText = 'دریافت کد';
+  private _otpInterval: any;
+
+
+  signupForm!: FormGroup;
+  private destroy$ = new Subject<void>();
+
 
   constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
     private alertService: AlertService,
-    private fb: FormBuilder, private authService: AuthService, private router: Router) { }
+    private router: Router
+  ) { }
 
-ngOnInit() {
-  this.signupForm = createSignUpForm(this.fb);
+  ngOnInit() {
+    this.signupForm = createSignUpForm(this.fb);
+this.signupForm.get('mobile')?.valueChanges.pipe(
+  debounceTime(700),
+  distinctUntilChanged()
+).subscribe(mobile => {
+  mobile = (mobile || '').trim();
 
-  this.signupForm.valueChanges.subscribe(() => {
-    const pass = this.signupForm.get('password')?.value;
-    const confirm = this.signupForm.get('confirmPassword')?.value;
+   if (!mobile) {
+      // 1️⃣ شماره خالی → خطا پاک شود و دکمه غیرفعال شود
+      this.signupForm.get('mobile')?.setErrors(null);
+      this.isMobileValid = false;
+      this.resetOtpButton();
+      return;
+    }
 
-    if (pass && confirm && pass !== confirm) {
-      this.signupForm.get('confirmPassword')?.setErrors({ mismatch: true });
+    // 2️⃣ شماره وارد شده اما اشتباه (ریجکس ایران) → خطا بماند
+    if (!this.iranMobileRegex.test(mobile)) {
+      this.signupForm.get('mobile')?.setErrors({ invalid: true });
+      this.isMobileValid = false;
+      this.resetOtpButton();
+      return;
+    }
+
+    // 3️⃣ شماره معتبر → خطا پاک شود و بررسی سرور انجام شود
+    this.signupForm.get('mobile')?.setErrors(null);
+    this.checkMobileAuto(mobile);
+  
+
+  // شماره معتبر → بررسی در سرور
+  this.checkingMobile = true;
+  this.authService.checkMobile(mobile).pipe(
+    finalize(() => this.checkingMobile = false)
+  ).subscribe(res => {
+    if (this.isSignUp) {
+      this.isMobileValid = !res.exists;
+      if (res.exists) this.alertService.showAlert('error','این شماره قبلا ثبت‌نام کرده');
     } else {
-      const errors = this.signupForm.get('confirmPassword')?.errors;
-      if (errors) {
-        delete errors['mismatch'];
-        if (Object.keys(errors).length === 0) {
-          this.signupForm.get('confirmPassword')?.setErrors(null);
-        }
-      }
+      this.isMobileValid = res.exists;
+      if (!res.exists) this.alertService.showAlert('error','این شماره ثبت نشده است');
     }
   });
-}
+});
 
+
+
+
+    // ✅ بررسی خودکار کد تأیید
+    this.signupForm.get('code')?.valueChanges.subscribe(value => {
+      if (value && value.length === 5) this.verifyOtpAuto();
+    });
+  }
+
+  private checkMobileAuto(mobile: string) {
+    console.log('🚀 sending check to backend:', mobile);
+
+    this.checkingMobile = true;
+    this.authService.checkMobile(mobile).subscribe({
+      next: res => {
+        this.checkingMobile = false;
+        console.log('Backend check:', res);
+
+        if (this.isSignUp) {
+          // ثبت نام
+          if (res.exists) {
+            this.alertService.showAlert('error', 'این شماره قبلاً ثبت‌نام کرده است.');
+            this.isMobileValid = false;
+          } else {
+            this.isMobileValid = true;
+          }
+        } else {
+          // ورود
+          if (res.exists) {
+            this.isMobileValid = true;
+          } else {
+            this.alertService.showAlert('error', 'این شماره ثبت نشده است.');
+            this.isMobileValid = false;
+          }
+        }
+
+
+      },
+      error: (err) => {
+        this.checkingMobile = false;
+        this.isMobileValid = false;
+        console.error('Error from backend:', err);
+      }
+    });
+  }
+
+  sendOtpCode() {
+    const mobile = this.signupForm.get('mobile')?.value;
+    if (!mobile) return;
+
+    this.authService.sendOtpCode({ mobile }).subscribe({
+      next: res => {
+        this.alertService.showAlert('success', res.message || 'کد ارسال شد.');
+        this.startOtpTimer();
+      },
+      error: (err: HttpErrorResponse) => {
+        this.alertService.showAlert('error', err.error?.message || 'خطا در ارسال کد.');
+      }
+    });
+  }
+
+  private startOtpTimer() {
+    this.otpTimer = 120;
+    this.updateOtpButtonText();
+
+    clearInterval(this._otpInterval);
+    this._otpInterval = setInterval(() => {
+      this.otpTimer--;
+      if (this.otpTimer > 0) {
+        this.updateOtpButtonText();
+      } else {
+        clearInterval(this._otpInterval);
+        this.otpButtonText = 'ارسال مجدد کد';
+      }
+    }, 1000);
+  }
+
+  private updateOtpButtonText() {
+    const minutes = Math.floor(this.otpTimer / 60);
+    const seconds = this.otpTimer % 60;
+    const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`;
+    this.otpButtonText = `${formattedTime}`;
+  }
+
+  private resetOtpButton() {
+    this.otpTimer = 0;
+    clearInterval(this._otpInterval);
+    this.otpButtonText = 'دریافت کد';
+  }
+
+  verifyOtpAuto() {
+    const mobile = this.signupForm.get('mobile')?.value;
+    const codeControl = this.signupForm.get('code');
+    if (!mobile || !codeControl?.value) return;
+
+    this.authService.verifyOtpCode({ mobile, code: codeControl.value }).subscribe({
+      next: res => {
+        this.alertService.showAlert('success', res.message || 'کد تأیید شد.');
+        codeControl.setErrors(null);
+        this.formValid = true;
+      },
+      error: (err: HttpErrorResponse) => {
+        codeControl.setErrors({ invalid: true });
+        this.formValid = false;
+        this.alertService.showAlert('error', err.error?.message || 'کد اشتباه است.');
+      }
+    });
+  }
+
+  submit() {
+    if (this.signupForm.invalid || !this.formValid) return;
+
+    const payload: SignUpPayload = {
+  
+      mobile: this.signupForm.value.mobile,
+      code: this.signupForm.value.code
+    };
+
+    this.authService.signup(payload).subscribe({
+      next: res => {
+        this.alertService.showAlert('success', res.message || 'ثبت‌نام موفقیت‌آمیز بود.');
+        setTimeout(() => this.router.navigate(['/']), 1500);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.alertService.showAlert('error', err.error?.message || 'خطا در ثبت‌نام.');
+      }
+    });
+  }
+
+  toggleForm(event?: Event) {
+    event?.preventDefault();
+    this.isSignUp = !this.isSignUp;
+    this.signupForm.reset();
+    this.formValid = false;
+    this.resetOtpButton();
+  }
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+    clearInterval(this._otpInterval);
+  }
 
   ngAfterViewInit() {
-    this.checkForm();
     this.enableAutoDirection();
   }
 
-  enableAutoDirection() {
+  private enableAutoDirection() {
     const inputFields = document.querySelectorAll<HTMLInputElement>('.input__field');
     inputFields.forEach(input => {
       input.addEventListener('input', () => {
@@ -62,57 +244,6 @@ ngOnInit() {
           input.style.textAlign = 'left';
         }
       });
-    });
-  }
-
-  toggleForm(event?: Event) {
-    event?.preventDefault();
-    this.isSignUp = !this.isSignUp;
-    this.formValid = false;
-    this.signupForm.reset();
-    setTimeout(() => this.checkForm());
-    setTimeout(() => this.enableAutoDirection());
-  }
-
-  checkForm() {
-    const requiredInputs = Array.from(document.querySelectorAll<HTMLInputElement>('input[required]'));
-    const passwordInput = document.getElementById('password') as HTMLInputElement;
-    const confirmInput = document.getElementById('confirm-password') as HTMLInputElement;
-
-    const validate = () => {
-      const allFilled = requiredInputs.every(input => input.value.trim() !== '');
-      const passwordsMatch = this.isSignUp ? (passwordInput?.value === confirmInput?.value) : true;
-      this.formValid = allFilled && passwordsMatch;
-    };
-
-    requiredInputs.forEach(input => input.addEventListener('input', validate));
-    if (passwordInput) passwordInput.addEventListener('input', validate);
-    if (confirmInput) confirmInput.addEventListener('input', validate);
-  }
-
-  submit() {
-    if (this.signupForm.invalid) return;
-
-    const payload: SignUpPayload = {
-      firstName: this.signupForm.value.firstName,
-      lastName: this.signupForm.value.lastName,
-      username: this.signupForm.value.username,
-      email: this.signupForm.value.email,
-      password: this.signupForm.value.password,
-    };
-
-    this.authService.signup(payload).subscribe({
-      next: () => {
-        this.alertService.showAlert('success', 'ثبت نام با موفقیت انجام شد!');
-        setTimeout(() => this.router.navigate(['/']), 1500);
-      },
-      error: (err: HttpErrorResponse) => {
-        if (err.status === 409) {
-          this.alertService.showAlert('error', 'این حساب کاربری قبلاً وجود دارد!');
-        } else {
-          this.alertService.showAlert('error', 'خطا در ثبت نام: ' + (err.error?.message || err.message));
-        }
-      }
     });
   }
 }

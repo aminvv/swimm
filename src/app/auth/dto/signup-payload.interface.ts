@@ -1,7 +1,16 @@
 export interface SignUpPayload {
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-  password: string;
+
+  mobile: string;
+  code: string;
 }
+
+export interface SendOtpCodePayload {
+  mobile: string;
+}
+export interface VerifyOtpCodePayload {
+  mobile: string;
+  code: string;
+}
+
+
+

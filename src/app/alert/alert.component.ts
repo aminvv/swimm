@@ -16,6 +16,9 @@ constructor(private alertService:AlertService){}
 ngOnInit(){
  this.alertService.alert$.subscribe(alert=>{
   this.alert=alert
+  if(alert){
+    setTimeout(()=>this.close(),3000)
+  }
  })
 }
 
