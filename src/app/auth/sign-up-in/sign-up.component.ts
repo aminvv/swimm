@@ -17,7 +17,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class SignUpComponent implements OnInit, AfterViewInit {
 
-  private iranMobileRegex = /^09[1-9][0-9]{8}$/;
+  private iranMobileRegex = /^09[0-9][0-9]{8}$/;
 
   isSignUp = true;
   formValid = false;
@@ -42,52 +42,47 @@ export class SignUpComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.signupForm = createSignUpForm(this.fb);
-this.signupForm.get('mobile')?.valueChanges.pipe(
-  debounceTime(700),
-  distinctUntilChanged()
-).subscribe(mobile => {
-  mobile = (mobile || '').trim();
+    this.signupForm.get('mobile')?.valueChanges.pipe(
+      debounceTime(700),
+      distinctUntilChanged()
+    ).subscribe(mobile => {
+      mobile = (mobile || '').trim();
 
-   if (!mobile) {
-      // 1️⃣ شماره خالی → خطا پاک شود و دکمه غیرفعال شود
+      if (!mobile) {
+        this.signupForm.get('mobile')?.setErrors(null);
+        this.isMobileValid = false;
+        this.resetOtpButton();
+        return;
+      }
+      if (!this.iranMobileRegex.test(mobile)) {
+        this.signupForm.get('mobile')?.setErrors({ invalid: true });
+        this.isMobileValid = false;
+        this.resetOtpButton();
+        return;
+      }
+
       this.signupForm.get('mobile')?.setErrors(null);
-      this.isMobileValid = false;
-      this.resetOtpButton();
-      return;
-    }
+      this.checkMobileAuto(mobile);
 
-    // 2️⃣ شماره وارد شده اما اشتباه (ریجکس ایران) → خطا بماند
-    if (!this.iranMobileRegex.test(mobile)) {
-      this.signupForm.get('mobile')?.setErrors({ invalid: true });
-      this.isMobileValid = false;
-      this.resetOtpButton();
-      return;
-    }
 
-    // 3️⃣ شماره معتبر → خطا پاک شود و بررسی سرور انجام شود
-    this.signupForm.get('mobile')?.setErrors(null);
-    this.checkMobileAuto(mobile);
-  
 
-  // شماره معتبر → بررسی در سرور
-  this.checkingMobile = true;
-  this.authService.checkMobile(mobile).pipe(
-    finalize(() => this.checkingMobile = false)
-  ).subscribe(res => {
-    if (this.isSignUp) {
-      this.isMobileValid = !res.exists;
-      if (res.exists) this.alertService.showAlert('error','این شماره قبلا ثبت‌نام کرده');
-    } else {
-      this.isMobileValid = res.exists;
-      if (!res.exists) this.alertService.showAlert('error','این شماره ثبت نشده است');
-    }
-  });
-});
+      this.checkingMobile = true;
+      this.authService.checkMobile(mobile).pipe(
+        finalize(() => this.checkingMobile = false)
+      ).subscribe(res => {
+        if (this.isSignUp) {
+          this.isMobileValid = !res.exists;
+          if (res.exists) this.alertService.showAlert('error', 'این شماره قبلا ثبت‌نام کرده');
+        } else {
+          this.isMobileValid = res.exists;
+          if (!res.exists) this.alertService.showAlert('error', 'این شماره ثبت نشده است');
+        }
+      });
+    });
 
 
 
 
-    // ✅ بررسی خودکار کد تأیید
     this.signupForm.get('code')?.valueChanges.subscribe(value => {
       if (value && value.length === 5) this.verifyOtpAuto();
     });
@@ -103,7 +98,7 @@ this.signupForm.get('mobile')?.valueChanges.pipe(
         console.log('Backend check:', res);
 
         if (this.isSignUp) {
-          // ثبت نام
+
           if (res.exists) {
             this.alertService.showAlert('error', 'این شماره قبلاً ثبت‌نام کرده است.');
             this.isMobileValid = false;
@@ -111,7 +106,7 @@ this.signupForm.get('mobile')?.valueChanges.pipe(
             this.isMobileValid = true;
           }
         } else {
-          // ورود
+
           if (res.exists) {
             this.isMobileValid = true;
           } else {
@@ -186,6 +181,8 @@ this.signupForm.get('mobile')?.valueChanges.pipe(
         this.alertService.showAlert('success', res.message || 'کد تأیید شد.');
         codeControl.setErrors(null);
         this.formValid = true;
+
+        sessionStorage.setItem('otpToken', res.otpToken)
       },
       error: (err: HttpErrorResponse) => {
         codeControl.setErrors({ invalid: true });
@@ -199,7 +196,7 @@ this.signupForm.get('mobile')?.valueChanges.pipe(
     if (this.signupForm.invalid || !this.formValid) return;
 
     const payload: SignUpPayload = {
-  
+
       mobile: this.signupForm.value.mobile,
       code: this.signupForm.value.code
     };
@@ -207,6 +204,8 @@ this.signupForm.get('mobile')?.valueChanges.pipe(
     this.authService.signup(payload).subscribe({
       next: res => {
         this.alertService.showAlert('success', res.message || 'ثبت‌نام موفقیت‌آمیز بود.');
+        sessionStorage.setItem('accessToken', res.accessToken);
+        sessionStorage.removeItem('otpToken');
         setTimeout(() => this.router.navigate(['/']), 1500);
       },
       error: (err: HttpErrorResponse) => {

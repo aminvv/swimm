@@ -18,10 +18,20 @@ export class AuthService {
       key => formData.set(key, payload[key as keyof SignUpPayload])
     );
 
+    const otpToken = sessionStorage.getItem('otpToken');
+    if (otpToken) formData.set('otpToken', otpToken);
+
     return this.http.post(`${this.baseUrl}/signup`, formData.toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
   }
+
+
+
+
+
+
+
 
   sendOtpCode(payload: SendOtpCodePayload): Observable<any> {
     const formData = new URLSearchParams();
@@ -33,6 +43,14 @@ export class AuthService {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
   }
+
+
+
+
+
+
+
+
   verifyOtpCode(payload: VerifyOtpCodePayload): Observable<any> {
     const formData = new URLSearchParams();
     Object.keys(payload).forEach(
@@ -46,11 +64,23 @@ export class AuthService {
 
 
 
-checkMobile(mobile: string) {
-  return this.http.get<{ exists: boolean }>(`${this.baseUrl}/check-mobile/${mobile}`);
-}
 
 
+
+
+
+
+
+  checkMobile(mobile: string) {
+    return this.http.get<{ exists: boolean }>(`${this.baseUrl}/check-mobile/${mobile}`);
+  }
+
+
+
+
+  refreshToken() {
+     return this.http.post(`${this.baseUrl}/refresh`,{},{withCredentials:true})
+  }
 
 
 }

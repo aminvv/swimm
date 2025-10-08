@@ -2,7 +2,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -16,6 +16,7 @@ import { FooterComponent } from './home/footer/footer.component';
 import { SignUpComponent } from './auth/sign-up-in/sign-up.component';
 import { ProductDetailPageComponent } from './product-detail-page/product-detail-page.component';
 import { AlertComponent } from './alert/alert.component';
+import { AuthInterceptor } from './auth/interceptor/auth.interceptor';
 
 
 @NgModule({
@@ -40,7 +41,9 @@ import { AlertComponent } from './alert/alert.component';
     ReactiveFormsModule,
     RouterModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent] 
 })
 export class AppModule { }
