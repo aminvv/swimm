@@ -10,6 +10,7 @@ export interface SendOtpCodePayload {
 export interface VerifyOtpCodePayload {
   mobile: string;
   code: string;
+  otpToken: string;
 }
 
 

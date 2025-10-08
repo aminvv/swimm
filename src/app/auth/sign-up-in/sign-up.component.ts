@@ -132,6 +132,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     this.authService.sendOtpCode({ mobile }).subscribe({
       next: res => {
         this.alertService.showAlert('success', res.message || 'کد ارسال شد.');
+        sessionStorage.setItem('otpToken', res.otpToken);
         this.startOtpTimer();
       },
       error: (err: HttpErrorResponse) => {
@@ -151,6 +152,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
         this.updateOtpButtonText();
       } else {
         clearInterval(this._otpInterval);
+        sessionStorage.removeItem('otpToken')
         this.otpButtonText = 'ارسال مجدد کد';
       }
     }, 1000);
@@ -176,13 +178,18 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     const codeControl = this.signupForm.get('code');
     if (!mobile || !codeControl?.value) return;
 
-    this.authService.verifyOtpCode({ mobile, code: codeControl.value }).subscribe({
+    const otpToken = sessionStorage.getItem('otpToken');
+    if (!otpToken) {
+      this.alertService.showAlert('error', 'کد منقضی شده. دوباره کد دریافت کنید.');
+      return;
+    }
+
+    this.authService.verifyOtpCode({ mobile, code: codeControl.value, otpToken }).subscribe({
       next: res => {
         this.alertService.showAlert('success', res.message || 'کد تأیید شد.');
         codeControl.setErrors(null);
         this.formValid = true;
 
-        sessionStorage.setItem('otpToken', res.otpToken)
       },
       error: (err: HttpErrorResponse) => {
         codeControl.setErrors({ invalid: true });
