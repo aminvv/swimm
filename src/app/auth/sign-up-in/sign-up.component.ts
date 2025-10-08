@@ -5,8 +5,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../service/Auth.service';
 import { AlertService } from '../../alert/service/alert.service';
 import { createSignUpForm } from '../form-config/signup-form.config';
-import { SignUpPayload } from '../dto/signup-payload.interface';
-import { catchError, debounceTime, distinctUntilChanged, filter, finalize, map, switchMap } from 'rxjs/operators';
+import { AuthPayload } from '../dto/signup-payload.interface';
+import {  debounceTime, distinctUntilChanged, filter, finalize, map, switchMap } from 'rxjs/operators';
 import { Subject, of } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -169,57 +169,72 @@ export class SignUpComponent implements OnInit, AfterViewInit {
 
   private resetOtpButton() {
     this.otpTimer = 0;
-    clearInterval(this._otpInterval);
-    this.otpButtonText = 'دریافت کد';
+    clearInterval(this._otpInterval)
+    this.otpButtonText = 'دریافت کد'
   }
 
   verifyOtpAuto() {
-    const mobile = this.signupForm.get('mobile')?.value;
-    const codeControl = this.signupForm.get('code');
-    if (!mobile || !codeControl?.value) return;
+    const mobile = this.signupForm.get('mobile')?.value
+    const codeControl = this.signupForm.get('code')
+    if (!mobile || !codeControl?.value) return
 
-    const otpToken = sessionStorage.getItem('otpToken');
+    const otpToken = sessionStorage.getItem('otpToken')
     if (!otpToken) {
-      this.alertService.showAlert('error', 'کد منقضی شده. دوباره کد دریافت کنید.');
+      this.alertService.showAlert('error', 'کد منقضی شده. دوباره کد دریافت کنید.')
       return;
     }
 
     this.authService.verifyOtpCode({ mobile, code: codeControl.value, otpToken }).subscribe({
       next: res => {
-        this.alertService.showAlert('success', res.message || 'کد تأیید شد.');
-        codeControl.setErrors(null);
-        this.formValid = true;
+        this.alertService.showAlert('success', res.message || 'کد تأیید شد.')
+        codeControl.setErrors(null)
+        this.formValid = true
 
       },
       error: (err: HttpErrorResponse) => {
-        codeControl.setErrors({ invalid: true });
-        this.formValid = false;
-        this.alertService.showAlert('error', err.error?.message || 'کد اشتباه است.');
+        codeControl.setErrors({ invalid: true })
+        this.formValid = false
+        this.alertService.showAlert('error', err.error?.message || 'کد اشتباه است.')
       }
     });
   }
 
-  submit() {
-    if (this.signupForm.invalid || !this.formValid) return;
+submit() {
+  if (this.signupForm.invalid || !this.formValid) return;
 
-    const payload: SignUpPayload = {
+  const payload: AuthPayload = {
+    mobile: this.signupForm.value.mobile,
+    code: this.signupForm.value.code
+  };
 
-      mobile: this.signupForm.value.mobile,
-      code: this.signupForm.value.code
-    };
+  if (this.isSignUp) {
 
     this.authService.signup(payload).subscribe({
       next: res => {
-        this.alertService.showAlert('success', res.message || 'ثبت‌نام موفقیت‌آمیز بود.');
-        sessionStorage.setItem('accessToken', res.accessToken);
-        sessionStorage.removeItem('otpToken');
-        setTimeout(() => this.router.navigate(['/']), 1500);
+        this.alertService.showAlert('success', res.message || 'ثبت‌نام موفقیت‌آمیز بود.')
+        sessionStorage.setItem('accessToken', res.accessToken)
+        sessionStorage.removeItem('otpToken'); 
+        setTimeout(() => this.router.navigate(['/']), 1500)
       },
       error: (err: HttpErrorResponse) => {
-        this.alertService.showAlert('error', err.error?.message || 'خطا در ثبت‌نام.');
+        this.alertService.showAlert('error', err.error?.message || 'خطا در ثبت‌نام.')
       }
     });
+  } else {
+    this.authService.signIn(payload).subscribe({
+      next: res => {
+        this.alertService.showAlert('success', res.message || 'ورود موفقیت‌آمیز بود.')
+        sessionStorage.setItem('accessToken', res.accessToken)
+        sessionStorage.removeItem('otpToken'); 
+        setTimeout(() => this.router.navigate(['/']), 1500)
+      },
+      error: (err: HttpErrorResponse) => {
+        this.alertService.showAlert('error', err.error?.message || 'خطا در ورود.')
+      }
+    })
   }
+}
+
 
   toggleForm(event?: Event) {
     event?.preventDefault();

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SendOtpCodePayload, SignUpPayload, VerifyOtpCodePayload } from '../dto/signup-payload.interface';
+import { SendOtpCodePayload, AuthPayload, VerifyOtpCodePayload } from '../dto/signup-payload.interface';
 import { API_CONFIG } from '../../../common/api/api.config';
 
 @Injectable({
@@ -12,16 +12,31 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  signup(payload: SignUpPayload): Observable<any> {
+  signup(payload: AuthPayload): Observable<any> {
     const formData = new URLSearchParams();
     Object.keys(payload).forEach(
-      key => formData.set(key, payload[key as keyof SignUpPayload])
+      key => formData.set(key, payload[key as keyof AuthPayload])
     );
 
     const otpToken = sessionStorage.getItem('otpToken');
     if (otpToken) formData.set('otpToken', otpToken);
 
     return this.http.post(`${this.baseUrl}/signup`, formData.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+  }
+
+
+  signIn(payload: AuthPayload): Observable<any> {
+    const formData = new URLSearchParams();
+    Object.keys(payload).forEach(
+      key => formData.set(key, payload[key as keyof AuthPayload])
+    );
+
+    const otpToken = sessionStorage.getItem('otpToken');
+    if (otpToken) formData.set('otpToken', otpToken);
+
+    return this.http.post(`${this.baseUrl}/signin`, formData.toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
   }

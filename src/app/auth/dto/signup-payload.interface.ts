@@ -1,4 +1,4 @@
-export interface SignUpPayload {
+export interface AuthPayload {
 
   mobile: string;
   code: string;
