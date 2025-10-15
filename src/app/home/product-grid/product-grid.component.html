@@ -1,18 +1,16 @@
-<div class="title-section">
-  <h1>Responsive Product card grid</h1>
-  <h2>HTML & CSS Version</h2>
-</div>
-
 <section class="grid-section">
   <div class="product-card" *ngFor="let product of products">
-    <a [href]="product.link">
-      <img [src]="product.img" alt="Product" />
+    <a [routerLink]="['/product', product.id]">
+      <img 
+        [src]="product.image?.[0] || 'https://via.placeholder.com/300x200/323842/ffffff?text=بدون+عکس'" 
+        [alt]="product.productName" 
+      />
       <div class="product-info">
-        <span class="brand">{{product.brand}}</span>
-        <p class="product-name">{{product.name}}</p>
+        <span class="brand">{{product.productCode}}</span>
+        <p class="product-name">{{product.productName}}</p>
+        <p class="description">{{product.description | slice:0:100}}...</p>
         <div class="price-section">
-          <p class="price">{{product.price}}</p>
-          <p class="old-price">{{product.oldPrice}}</p>
+          <p class="price">{{product.price | currency:'IRR'}}</p>
           <div class="cart-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z"/>
@@ -25,6 +23,18 @@
   </div>
 </section>
 
-<div class="credit">
-  <h2>Thanks to <a href="https://unsplash.com/@nixcreative">Tyler Nix</a> for product images!</h2>
+<div *ngIf="isLoading" class="loading">در حال بارگذاری...</div>
+
+<button *ngIf="!isLoading && hasMoreProducts && products.length > 0" 
+        (click)="loadMore()" 
+        class="load-more-btn">
+  بارگذاری محصولات بیشتر
+</button>
+
+<div *ngIf="!hasMoreProducts && products.length > 0" class="no-more">
+  🎉 همه محصولات بارگذاری شدند
+</div>
+
+<div *ngIf="products.length === 0 && !isLoading" class="no-products">
+  محصولی یافت نشد
 </div>

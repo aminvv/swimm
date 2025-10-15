@@ -17,6 +17,7 @@ import { SignUpComponent } from './auth/sign-up-in/sign-up.component';
 import { ProductDetailPageComponent } from './product-detail-page/product-detail-page.component';
 import { AlertComponent } from './alert/alert.component';
 import { AuthInterceptor } from './auth/interceptor/auth.interceptor';
+import { ProductService } from './home/product-grid/services/product.service';
 
 
 @NgModule({
@@ -34,6 +35,7 @@ import { AuthInterceptor } from './auth/interceptor/auth.interceptor';
    
   ],
   imports: [
+    HttpClientModule,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
@@ -42,7 +44,8 @@ import { AuthInterceptor } from './auth/interceptor/auth.interceptor';
     RouterModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+     ProductService
   ],
   bootstrap: [AppComponent] 
 })
