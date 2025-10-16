@@ -1,5 +1,9 @@
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit, inject } from '@angular/core';
 import { Product, ProductService } from './services/product.service';
+import { Router } from '@angular/router';
+
+
+
 
 declare global {
   interface Window {
@@ -19,8 +23,9 @@ export class ProductGridComponent implements AfterViewInit, OnInit {
   isLoading = false;
   totalProducts = 0;
   hasMoreProducts = true;
+  private router = inject(Router);
 
-  constructor(private productService: ProductService) {}
+  constructor(private productService: ProductService) { }
 
   ngOnInit() {
     this.loadProducts();
@@ -45,7 +50,7 @@ export class ProductGridComponent implements AfterViewInit, OnInit {
 
   loadMore() {
     if (!this.hasMoreProducts) return;
-    
+
     this.page++;
     this.isLoading = true;
     this.productService.getProducts(this.page, this.limit).subscribe({
@@ -62,6 +67,8 @@ export class ProductGridComponent implements AfterViewInit, OnInit {
       }
     });
   }
+
+
 
   ngAfterViewInit(): void {
     if (window.kofiWidgetOverlay) {

@@ -1,6 +1,6 @@
-<section class="grid-section">
-  <div class="product-card" *ngFor="let product of products">
-    <a [routerLink]="['/product', product.id]">
+<section class="grid-section" >
+  <div class="product-card"  *ngFor="let product of products">
+    <a [routerLink]="['/productDetail', product.id]">
       <img 
         [src]="product.image?.[0] || 'https://via.placeholder.com/300x200/323842/ffffff?text=بدون+عکس'" 
         [alt]="product.productName" 
@@ -28,12 +28,12 @@
 <button *ngIf="!isLoading && hasMoreProducts && products.length > 0" 
         (click)="loadMore()" 
         class="load-more-btn">
-  بارگذاری محصولات بیشتر
+   محصولات بیشتر
 </button>
 
-<div *ngIf="!hasMoreProducts && products.length > 0" class="no-more">
+<!-- <div *ngIf="!hasMoreProducts && products.length > 0" class="no-more">
   🎉 همه محصولات بارگذاری شدند
-</div>
+</div> -->
 
 <div *ngIf="products.length === 0 && !isLoading" class="no-products">
   محصولی یافت نشد

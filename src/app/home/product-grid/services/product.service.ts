@@ -5,19 +5,34 @@ import { Observable } from "rxjs";
 
 export interface Product {
   id: number;
-  productName: string;
+
   productCode: string;
-  price: string;
-  oldPrice?: string;
-  image: string[] | null;
-  description: string;
+  productName?: string;
+  description?: string;
+  price: number;
+
+  
+  rollWeight?: number;
+  thickness?: number;
   dimensions?: string;
-  warranty?: string;
-  rollWeight?: string;
-  thickness?: string;
   lifespan?: string;
   bitumenType?: string;
+  warranty?: string;
+  image?: string[];
+  quantity?: number;
+  discountPercent?: number;
+  discountAmount?: number;
+  nationalProductCode?: string;
+  fiberBaseType?: string;
+  internationalCode?: string;
+  brandRegistrationNumber?: string;
+  coatingType?: string;
+  productBenefits?: string;
+  applicationType?: string;
+  isogumType?: string;
+  technicalSpecifications?: string;
 }
+
 
 export interface ProductResponse {
   products: Product[];
@@ -25,7 +40,7 @@ export interface ProductResponse {
 }
 
 @Injectable({
-  providedIn: 'root' 
+  providedIn: 'root'
 })
 export class ProductService {
   private apiUrl = `${API_CONFIG.baseUrl}/${API_CONFIG.product}`;
@@ -36,7 +51,11 @@ export class ProductService {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
-    
+
     return this.http.get<ProductResponse>(this.apiUrl, { params });
+  }
+
+  getProductById(id: string) {
+    return this.http.get<Product>(`${API_CONFIG.baseUrl}/${API_CONFIG.product}/${id}`)
   }
 }
